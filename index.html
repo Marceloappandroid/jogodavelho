@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .board {
+            display: inline-grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 24px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Velha</h1>
+    <div class="board" id="board">
+        <!-- Cells will be generated here -->
+    </div>
+    <div id="message"></div>
+    <button id="resetButton">Limpar</button>
+
+    <script>
+        const board = document.getElementById("board");
+        const message = document.getElementById("message");
+        const resetButton = document.getElementById("resetButton");
+        let currentPlayer = "X";
+        let cells = ["", "", "", "", "", "", "", "", ""];
+        let gameOver = false;
+
+        // Create the game board
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.addEventListener("click", () => cellClick(i));
+            board.appendChild(cell);
+        }
+
+        function cellClick(index) {
+            if (cells[index] === "" && !gameOver) {
+                cells[index] = currentPlayer;
+                document.getElementsByClassName("cell")[index].textContent = currentPlayer;
+                checkWinner();
+                currentPlayer = (currentPlayer === "X") ? "O" : "X";
+            }
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+                    message.textContent = `Player ${cells[a]} ganhou!`;
+                    gameOver = true;
+                }
+            }
+
+            if (!cells.includes("") && !gameOver) {
+                message.textContent = "Empate!";
+                gameOver = true;
+            }
+        }
+
+        resetButton.addEventListener("click", resetGame);
+
+        function resetGame() {
+            cells = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            gameOver = false;
+            message.textContent = "";
+            const cellElements = document.getElementsByClassName("cell");
+            for (let i = 0; i < cellElements.length; i++) {
+                cellElements[i].textContent = "";
+            }
+        }
+    </script>
+</body>
+</html>
